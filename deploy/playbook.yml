@@ -1,0 +1,191 @@
+---
+-
+  hosts: all
+  vars_files:
+    - vars.yml
+  gather_facts: false
+  sudo: true
+
+  tasks:
+    - name: create project user
+      user:
+        home=/home/{{ project_name}}
+        name={{ project_name }}
+        state=present
+    - name: Update the project dir
+      file: group={{ project_name }} owner={{ project_name }} mode=755 state=directory path={{ project_root }}
+
+    - name: Install python-pycurl
+      apt:
+        pkg=python-pycurl
+        state=installed
+        update-cache=yes
+
+    - name: Ensure apache is absent
+      apt:
+        pkg=apache2
+        state=absent
+
+    - name: Install basic system packages
+      apt:
+        pkg={{ item }}
+        state=installed
+      with_items: system_packages
+
+    - name: Install basic python packages
+      easy_install: name={{ item }}
+      with_items:
+        - pip
+
+    - name: System configuration
+      action: shell export LANGUAGE=en_US.UTF-8
+
+    - name: System configuration
+      action: shell export LANG=en_US.UTF-8
+
+    - name: System configuration
+      action: shell export LC_ALL=en_US.UTF-8
+
+    - name: Configure locales
+      action: shell locale-gen en_US.UTF-8
+      sudo: True
+
+    - name: dpkg-reconfigure locales
+      action: shell dpkg-reconfigure locales
+      sudo: True
+
+    # Configure PostgreSQL
+    - name: Add postgresql apt source
+      apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main' state=present
+
+    - name: Add certificate
+      apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc
+
+    - name: Install packages
+      apt:
+        pkg={{ item }}
+        state=installed
+        update-cache=yes
+      with_items:
+        - postgresql-server-dev-{{ postgresql_version }}
+        - postgresql-{{postgresql_version}}
+        - python-psycopg2
+
+    - name: Ensure PostgreSQL is listening on all localhost
+      lineinfile: dest=/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf
+                  regexp='^#?listen_addresses\s*='
+                  line="listen_addresses = '127.0.0.1'"
+                  state=present
+      notify:
+        - restart postgresql
+
+    - name: Check access
+      lineinfile: dest=/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
+               regexp='host\s+all\s+all\s+127.0.0.1/32\s+md5'
+               line='host all all 127.0.0.1/32 md5'
+               insertbefore=BOF
+      notify: restart postgresql
+
+
+    - name: Create the databases dir
+      file: state=directory path=/usr/local/databases/postgresql
+      sudo_user: root
+
+    - name: Start PostgreSQL and enable at boot
+      service:
+        name=postgresql
+        enabled=yes
+        state=started
+
+    - name: Create database {{ pg_db }}
+      sudo_user: postgres
+      postgresql_db: name={{ pg_db }} template='template0'
+
+    - name: Create postgresql user - {{ pg_user }}
+      postgresql_user: db={{ pg_db }} user={{ pg_user }} password={{ pg_pass }}
+      sudo_user: postgres
+
+    - name: Grant permissions to user {{ pg_user }} in database {{ pg_db }}
+      #postgresql_privs: db={{ pg_db }} privs=ALL type=database obj={{ pg_db }} role={{ pg_user }}
+      postgresql_privs: db=postgres privs=ALL type=database obj={{ pg_db }} role={{ pg_user }}
+      sudo_user: postgres
+
+    - name: simlink for source code in vm
+      action: file src=/vagrant dest={{ project_root }}/code state=link
+      sudo: True
+
+    # Deploying project
+    - name: install packages to env
+      sudo: True
+      pip:
+        requirements={{ project_root }}/code/requirements.txt
+        virtualenv={{ project_root }}/env/
+
+    - name: dropdb of application
+      action: shell {{ project_root }}/env/bin/python {{ project_root }}/code/manage.py dropdb
+
+    - name: initdb of application
+      action: shell {{ project_root }}/env/bin/python {{ project_root }}/code/manage.py initdb
+
+    - name: Ensure nginx is stopped
+      service: name=nginx state=stopped
+      sudo: True
+
+    - name: Install nginx configs
+      template: src=templates/nginx/site_config.j2 dest=/etc/nginx/sites-available/{{ project_name }}
+      sudo: True
+
+    - name: simlink for nginx site config
+      action: file src=/etc/nginx/sites-available/{{ project_name }} dest=/etc/nginx/sites-enabled/{{ project_name }} state=link
+      sudo: True
+
+    - name: Ensure nginx is started
+      service: name=nginx state=started
+      sudo: True
+
+    - name: Ensure supervisor is stopped
+      service: name=supervisor state=stopped
+      sudo: True
+
+    - name: Install supervisord config for web
+      sudo: True
+      template: src=templates/supervisor/web.j2 dest=/etc/supervisor/conf.d/{{ project_name }}_web.conf
+
+    - name: Install supervisord config for watcher
+      sudo: True
+      template: src=templates/supervisor/watcher.j2 dest=/etc/supervisor/conf.d/{{ project_name }}_watcher.conf
+
+    - name: Update the project dir
+      sudo: True
+      file:
+        group={{ project_name }}
+        owner={{ project_name }}
+        mode=755
+        state=directory
+        path={{ project_root }}
+        recurse=yes
+
+    - name: Ensure supervisor is started
+      service: name=supervisor state=started
+      sudo: True
+
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted
+      sudo: True
+
+    - name: reload nginx
+      service: name=nginx state=reloaded
+      sudo_user: root
+
+    - name: supervisor start
+      service: name=supervisor state=started
+      sudo_user: root
+
+    - name: supervisor restart
+      service: name=supervisor state=restarted
+      sudo_user: root
+
+    - name: restart postgresql
+      service: name=postgresql state=restarted

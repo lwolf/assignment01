@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block body %}
+    {% if items %}
+        <div class="container">
+            <div class="row col-md-12 custyle">
+            <table class="table table-striped custab">
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Updated</th>
+                    <th>Status</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            {% for item in items %}
+                <tr>
+                    <td><a href="{{url_for('view_item', item_id=item.id)}}">{{ item.filename }}</a></td>
+                    <td>{{ item.updated_at }}</td>
+                    <td>{{ item.status }}</td>
+                    <td class="text-center">
+                        <form method="POST" action="{{ url_for('delete_item', item_id=item.id)}}">
+                            <button class="btn btn-danger btn-xs">
+                                <span class="glyphicon glyphicon-remove"></span> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+            </div>
+        </div>
+    {% else %}
+        <h1> No items found! </h1>
+    {% endif %}
+{% endblock %}

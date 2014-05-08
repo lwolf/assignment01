@@ -1,0 +1,7 @@
+Flask==0.10.1
+Flask-Script==2.0.3
+Flask-SQLAlchemy==1.0
+requests==2.2.1
+python-magic==0.4.6
+psycopg2==2.5.2
+watchdog==0.7.1

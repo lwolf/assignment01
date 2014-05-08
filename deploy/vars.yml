@@ -1,0 +1,19 @@
+project_name: "assignment"
+project_root: "/var/projects/{{ project_name }}"
+postgresql_version: "9.3"
+pg_db: "assignment"
+pg_user: "username"
+pg_pass: "password"
+
+system_packages:
+  - mc
+  - git
+  - vim
+  - build-essential
+  - nginx
+  - python-dev
+  - python-setuptools
+  - python-virtualenv
+  - supervisor
+  - python-pycurl
+

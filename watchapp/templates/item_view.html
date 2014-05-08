@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block body %}
+    {% if item.is_image() %}
+        <img src="/data/{{ item.filename }}"/>
+    {% endif %}
+
+    <table class="table">
+        <tr>
+            <td>Filename</td>
+            <td>{{ item.filename }}</td>
+        </tr>
+        <tr>
+            <td>Path</td>
+            <td>{{ item.path }}</td>
+        </tr>
+        <tr>
+            <td>MimeType</td>
+            <td>{{ item.mimetype}}</td>
+        </tr>
+        <tr>
+            <td>Created</td>
+            <td>{{ item.created_at }}</td>
+        </tr>
+        <tr>
+            <td>Last update</td>
+            <td>{{ item.updated_at }}</td>
+        </tr>
+        <tr>
+            <td>Status</td>
+            <td>{{ item.status }}</td>
+        </tr>
+    </table>
+
+{% endblock %}

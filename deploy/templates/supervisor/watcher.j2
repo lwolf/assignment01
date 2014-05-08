@@ -1,0 +1,5 @@
+[program:{{ project_name }}_watcher]
+command={{ project_root }}/env/bin/python {{ project_root }}/code/watcher/watcher.py {{ project_root}}/code/watch_here
+environment=PATH="{{ project_root }}/env/bin"
+stdout_logfile=/var/log/supervisor/{{ project_name }}_watcher.log
+redirect_stderr=true
