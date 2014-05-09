@@ -1,5 +1,5 @@
 [program:{{ project_name }}_web]
-command={{ project_root }}/env/bin/python {{ project_root }}/code/manage.py runserver
+command={{ project_root }}/env/bin/python {{ project_root }}/code/manage.py runserver -h 0.0.0.0
 environment=PATH="{{ project_root }}/env/bin"
 stdout_logfile=/var/log/supervisor/{{ project_name }}_web.log
 redirect_stderr=true
