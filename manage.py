@@ -16,10 +16,5 @@ def dropdb():
     db.drop_all()
 
 
-@manager.command
-def initial_sync():
-    pass
-
-
 if __name__ == '__main__':
     manager.run()
