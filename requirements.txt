@@ -5,3 +5,4 @@ requests==2.2.1
 python-magic==0.4.6
 psycopg2==2.5.2
 watchdog==0.7.1
+Sqlalchemy-Enum-Dict

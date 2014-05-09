@@ -2,9 +2,24 @@
 from datetime import datetime
 from watchapp.extensions import db
 
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy_enum_dict import EnumDictForInt
+
+DeclarativeBase = declarative_base()
+DeclarativeBase.query = db.session.query_property()
+
 
 class File(db.Model):
-    STATUS_NORMAL, STATUS_DELETED, STATUS_MISSING = range(0, 3)
+    STATUS = EnumDictForInt.Enum(
+        ('NORMAL', {
+            'db': 0,
+            'title': 'normal'
+        }),
+        ('DELETED', {
+            'db': 1,
+            'title': 'deleted',
+        })
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String)
@@ -12,9 +27,14 @@ class File(db.Model):
     mimetype = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now())
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now())
-    status = db.Column(db.Integer, default=STATUS_NORMAL)
+    status = db.Column(EnumDictForInt(STATUS))
 
-    meta = db.relationship('Metadata', backref='file', lazy='dynamic')
+    meta = db.relationship(
+        'Metadata',
+        backref='file',
+        lazy='joined',
+        cascade="all,delete"
+    )
 
     def is_image(self):
         if self.mimetype and self.mimetype.startswith('image'):
@@ -26,6 +46,7 @@ class Metadata(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
     info_id = db.Column(db.Integer, db.ForeignKey('field.id'))
+    field_info = db.relationship('Field', lazy='joined')
     content = db.Column(db.UnicodeText)
 
 

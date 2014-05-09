@@ -2,7 +2,7 @@
 
 {% block body %}
     {% if item.is_image() %}
-        <img src="/data/{{ item.filename }}"/>
+        <img src="/data/{{ item.filename }}" align="center"/>
     {% endif %}
 
     <table class="table">
@@ -28,8 +28,67 @@
         </tr>
         <tr>
             <td>Status</td>
-            <td>{{ item.status }}</td>
+            <td>{{ item.status.title }}</td>
         </tr>
     </table>
+    <button class="btn btn-primary" data-toggle="modal" data-target=".add-metadata-modal">Add Metadata</button>
 
+    {% if item.meta %}
+        <h4> Metadata </h4>
+        <table class="table">
+            {% for meta in item.meta %}
+                <tr>
+                    <td>{{ meta.field_info.name }}</td>
+                    <td>{{ meta.field_info.description }}</td>
+                    <td>{{ meta.content}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+
+    <div class="modal fade add-metadata-modal" tabindex="-1" role="dialog" aria-labelledby="addMetadataLabel" aria-hidden="true">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <form class="form-horizontal" action="{{ url_for('update_item', item_id=item.id)}}" method="POST">
+            <fieldset>
+
+            <!-- Form Name -->
+            <legend class="form-legend">Add metadata</legend>
+
+            <!-- Select Basic -->
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="metafield">Field type</label>
+              <div class="col-md-6">
+                <select id="metafield" name="metafield" class="form-control">
+                    {% for field in fields %}
+                    <option value="{{ field.id }}"> {{ field.name }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="metavalue">Field value</label>
+              <div class="col-md-6">
+              <input id="metavalue" name="metavalue" type="text" placeholder="Enter your value" class="form-control input-md" required="">
+              </div>
+            </div>
+
+            <!-- Button (Double) -->
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="save-meta"></label>
+              <div class="col-md-6">
+                <button id="save-meta" name="save-meta" class="btn btn-success">Save</button>
+                <button id="calcel-meta" name="calcel-meta" class="btn btn-danger">Cancel</button>
+              </div>
+            </div>
+
+            </fieldset>
+            </form>
+
+        </div>
+      </div>
+    </div>
 {% endblock %}

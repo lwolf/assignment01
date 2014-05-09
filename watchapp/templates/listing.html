@@ -17,14 +17,27 @@
                 <tr>
                     <td><a href="{{url_for('view_item', item_id=item.id)}}">{{ item.filename }}</a></td>
                     <td>{{ item.updated_at }}</td>
-                    <td>{{ item.status }}</td>
-                    <td class="text-center">
-                        <form method="POST" action="{{ url_for('delete_item', item_id=item.id)}}">
-                            <button class="btn btn-danger btn-xs">
-                                <span class="glyphicon glyphicon-remove"></span> Delete
-                            </button>
-                        </form>
-                    </td>
+                    <td>{{ item.status.title }}</td>
+
+                    {% if item.status.db == item.STATUS.DELETED.db %}
+                        <td class="text-center">
+                            <form method="POST" action="{{ url_for('change_status', item_id=item.id)}}">
+                                <input type="hidden" name="status" id="status" value="{{item.STATUS.NORMAL.db}}"/>
+                                <button class="btn btn-success btn-xs">
+                                    <span class="glyphicon glyphicon-remove"></span> Recover
+                                </button>
+                            </form>
+                        </td>
+                    {% else %}
+                        <td class="text-center">
+                            <form method="POST" action="{{ url_for('change_status', item_id=item.id)}}">
+                                <input type="hidden" name="status" id="status" value="{{item.STATUS.DELETED.db}}"/>
+                                <button class="btn btn-danger btn-xs">
+                                    <span class="glyphicon glyphicon-remove"></span> Delete
+                                </button>
+                            </form>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             </table>
