@@ -13,6 +13,11 @@
 <body>
     <script src="{{ url_for('static', filename='js/jquery-2.1.1.min.js')}}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(function () { $("[data-toggle='popover']").popover(); });
+        });
+    </script>
 
 
 <nav class="navbar navbar-default" role="navigation">
@@ -42,7 +47,7 @@
             </div>
         </div>
         <div class="form-group col-md-12 scope-block">
-          <label class="col-md-4 control-label" for="scope">Search scope:</label>
+          <label class="col-md-4 control-label hidden-sm hidden-xs" for="scope">Search scope:</label>
           <div class="col-md-8">
             <label class="col-md-6" for="filename">
               <input type="radio" name="scope" id="filename" value="filename" checked="checked">

@@ -24,3 +24,9 @@
 .scope-block label{
     font-weight: 400;
 }
+table{
+    margin-top: 10px;
+}
+.info-popover{
+    cursor: pointer;
+}

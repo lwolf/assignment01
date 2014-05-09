@@ -31,7 +31,6 @@ class MyHandler(PatternMatchingEventHandler):
         }
         self._post(data)
 
-
     def on_modified(self, event):
         self.process(event)
 
@@ -39,7 +38,6 @@ class MyHandler(PatternMatchingEventHandler):
         self.process(event)
 
     def on_deleted(self, event):
-        # on delete remove file from db
         print event.src_path, event.event_type
         self._post({
             'path': event.src_path,
@@ -48,7 +46,6 @@ class MyHandler(PatternMatchingEventHandler):
 
     def on_moved(self, event):
         self.process(event)
-
 
 if __name__ == '__main__':
     args = sys.argv[1:]

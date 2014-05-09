@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
+<div class="container">
     {% if item.is_image() %}
         <div class="image-wrapper">
             <img class="img-rounded image-preview" src="/data/{{ item.filename }}" align="center"/>
@@ -38,10 +39,24 @@
     {% if item.meta %}
         <h4> Metadata </h4>
         <table class="table">
+            <thead>
+                <tr>
+                    <th>Field name</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
             {% for meta in item.meta %}
                 <tr>
-                    <td>{{ meta.field_info.name }}</td>
-                    <td>{{ meta.field_info.description }}</td>
+                    <td>
+                        {{ meta.field_info.name }}
+                        <i
+                            class="glyphicon glyphicon-info-sign info-popover"
+                            data-container="body"
+                            data-toggle="popover"
+                            data-placement="right"
+                            data-content="Description: {{ meta.field_info.description }}">
+                        </i>
+                    </td>
                     <td>{{ meta.content}}</td>
                 </tr>
             {% endfor %}
@@ -93,4 +108,5 @@
         </div>
       </div>
     </div>
+</div>
 {% endblock %}

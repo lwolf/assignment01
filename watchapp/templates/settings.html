@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
 {% block body %}
-
-    <h4> Manage metadata fields</h4>
-    <button class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-sm">Create new</button>
-
-    <table class="table">
-        {% for meta in fields %}
-            <tr>
-                <td>{{ meta.name }}</td>
-                <td>{{ meta.description }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="container">
+        <h4> Manage metadata fields</h4>
+        <button class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-sm">Create new</button>
+        <table class="table">
+            {% for meta in fields %}
+                <tr>
+                    <td>{{ meta.name }}</td>
+                    <td>{{ meta.description }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 
     <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-md">
@@ -28,7 +28,6 @@
               </div>
             </div>
 
-            <!-- Textarea -->
             <div class="form-group">
               <label class="col-md-4 control-label" for="description">Description</label>
               <div class="col-md-4">
@@ -40,14 +39,11 @@
               <label class="col-md-4 control-label" for="save-meta"></label>
               <div class="col-md-6">
                 <button id="save-meta" name="save-meta" class="btn btn-success">Save</button>
-                <button id="calcel-meta" name="calcel-meta" class="btn btn-danger">Cancel</button>
               </div>
             </div>
 
             </fieldset>
             </form>
-
-
 
         </div>
       </div>
