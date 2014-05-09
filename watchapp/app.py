@@ -3,6 +3,7 @@ import os
 from flask import Flask, render_template, request, abort, redirect, url_for
 from watchapp.extensions import db
 from watchapp.models import File, Field, Metadata
+from watchapp.settings import PAGE_SIZE
 
 
 app = Flask(__name__)
@@ -14,19 +15,20 @@ db.init_app(app)
 @app.route('/')
 def mainpage():
     """
-    Show 20 recently updated Files
+    Show recently updated Files
     """
     items = (
         File.query
         .filter(File.status == File.STATUS.NORMAL.db)
         .order_by(File.updated_at.desc())
-        .limit(20)
+        .limit(PAGE_SIZE)
         .all()
     )
     return render_template(
         'listing.html',
         active_menu='recent',
-        items=items
+        items=items,
+        title=u"{0} most recently updated files".format(PAGE_SIZE)
     )
 
 @app.route('/deleted')
@@ -43,7 +45,8 @@ def deleted():
     return render_template(
         'listing.html',
         active_menu='deleted',
-        items=items
+        items=items,
+        title=u"List of removed files".format(PAGE_SIZE)
     )
 
 
@@ -58,7 +61,7 @@ def view_item(item_id):
     item = File.query.filter(File.id == item_id).first()
     if not item:
         abort(404)
-    fields = Field.query.limit(20).all()
+    fields = Field.query.limit(PAGE_SIZE).all()
     return render_template(
         'item_view.html',
         item=item,
