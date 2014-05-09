@@ -13,3 +13,14 @@
     text-align: center;
     padding: 5px;
 }
+.image-wrapper{
+    text-align: center;
+    margin: 10px 0;
+}
+.image-preview{
+    max-width: 600px;
+    max-height: 400px;
+}
+.scope-block label{
+    font-weight: 400;
+}

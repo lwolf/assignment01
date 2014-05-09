@@ -4,6 +4,10 @@
     {% if items %}
         <div class="container">
             <div class="row col-md-12 custyle">
+                {% if title %}
+                    <h3>{{ title }}</h3>
+                {% endif %}
+
             <table class="table table-striped custab">
             <thead>
                 <tr>
@@ -24,7 +28,7 @@
                             <form method="POST" action="{{ url_for('change_status', item_id=item.id)}}">
                                 <input type="hidden" name="status" id="status" value="{{item.STATUS.NORMAL.db}}"/>
                                 <button class="btn btn-success btn-xs">
-                                    <span class="glyphicon glyphicon-remove"></span> Recover
+                                    <span class="glyphicon glyphicon-refresh"></span> Recover
                                 </button>
                             </form>
                         </td>

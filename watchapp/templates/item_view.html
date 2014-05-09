@@ -2,7 +2,9 @@
 
 {% block body %}
     {% if item.is_image() %}
-        <img src="/data/{{ item.filename }}" align="center"/>
+        <div class="image-wrapper">
+            <img class="img-rounded image-preview" src="/data/{{ item.filename }}" align="center"/>
+        </div>
     {% endif %}
 
     <table class="table">

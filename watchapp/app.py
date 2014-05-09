@@ -48,14 +48,6 @@ def deleted():
     )
 
 
-@app.route('/search')
-def search():
-    return render_template(
-        'listing.html'
-    )
-
-
-
 @app.route('/items/<int:item_id>', methods=['GET'])
 def view_item(item_id):
     item = File.query.filter(File.id == item_id).first()
@@ -163,3 +155,33 @@ def create_field():
     db.session.commit()
     return redirect(url_for('settings'))
 
+
+@app.route('/search')
+def search():
+    query = request.args.get('q')
+    scope = request.args.get('scope')
+    results = []
+
+    if scope == 'filename':
+        results = (
+            File.query
+            .filter(File.filename.ilike('%{0}%'.format(query)))
+            .all()
+        )
+    elif scope == 'metadata':
+        ids = (
+            db.session
+            .query(Metadata.file_id)
+            .filter(Metadata.content.ilike('%{0}%'.format(query)))
+            .all()
+        )
+        if ids:
+            results = File.query.filter(File.id.in_(ids)).all()
+
+    title = u"Search results for term `{0}` in `{1}` scope".format(query, scope)
+
+    return render_template(
+        'listing.html',
+        items=results,
+        title=title
+    )
