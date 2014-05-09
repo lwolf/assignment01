@@ -24,7 +24,7 @@ Application was written using:
 * **Python** with **Flask** microframework
 * **PostgreSQL** as main sql storage
 * **Flask-SQLAlchemy** - flask extension for SQLAlchemy ORM
-* **Sqlalchemy-Enum-Dict** - Enum columnt implementation for SQLAlchemy
+* **Sqlalchemy-Enum-Dict** - Enum column implementation for SQLAlchemy
 * **Flask-Script** - extension for writing external scripts in Flask
 * **requests** - library for making http requests
 * **python-magic** - library used for getting Mimetype info from file
