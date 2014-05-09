@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
 {% block body %}
+    <div class="container">
     {% if items %}
-        <div class="container">
+
             <div class="row col-md-12 custyle">
                 {% if title %}
                     <h3>{{ title }}</h3>
@@ -46,8 +47,9 @@
             {% endfor %}
             </table>
             </div>
-        </div>
+
     {% else %}
         <h1> No items found! </h1>
     {% endif %}
+    </div>
 {% endblock %}

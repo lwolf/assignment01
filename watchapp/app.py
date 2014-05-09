@@ -96,6 +96,27 @@ def update_item(item_id):
     return redirect(url_for('view_item', item_id=item_id))
 
 
+@app.route('/metadata/<int:meta_id>/delete', methods=["POST"])
+def delete_meta(meta_id):
+    meta = Metadata.query.filter(Metadata.id == meta_id).first()
+    if not meta:
+        abort(404)
+    item_id = meta.file_id
+    db.session.delete(meta)
+    db.session.commit()
+    return redirect(url_for('view_item', item_id=item_id))
+
+@app.route('/metadata/<int:meta_id>/edit', methods=["POST"])
+def edit_meta(meta_id):
+    meta = Metadata.query.filter(Metadata.id == meta_id).first()
+    if not meta:
+        abort(404)
+    new_value = request.form.get('new_value')
+    meta.content = new_value
+    db.session.commit()
+    return 'ok'
+
+
 @app.route('/items/<int:item_id>/change_status', methods=['POST'])
 def change_status(item_id):
     """

@@ -1,6 +1,48 @@
 {% extends "base.html" %}
 
 {% block body %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        function switch_editor(item_id){
+            var lbl = $('#meta-content-value-' + item_id);
+            var editor = $('#inline-editor-'+ item_id);
+            if (editor.hasClass('hidden')){
+                editor.removeClass('hidden');
+                lbl.hide();
+            }else{
+                editor.addClass('hidden');
+                lbl.show();
+            }
+        }
+        $('.edit_metadata').click(function(){
+            var item_id = $(this).data('meta-id');
+            $('#inline-editor-' + item_id + " textarea").val($('#meta-content-value-' + item_id).text());
+            switch_editor(item_id);
+        });
+        $('.meta-edit-save').click(function(){
+            var item_id = $(this).parents('td').data('meta-id');
+            var old_value = $('#meta-content-value-' + item_id).text();
+            var new_value = $('#inline-editor-' + item_id + " textarea").val();
+            if ((old_value != new_value) && (new_value != "")){
+                $.ajax({
+                    url: '/metadata/' + item_id + '/edit',
+                    data: {'new_value': new_value},
+                    method: 'POST'
+
+                }).done(function(){
+                    $('#meta-content-value-' + item_id).text(new_value);
+                }).fail(function(e){
+                    alert('Error during saving', e);
+                });
+            }
+            switch_editor(item_id);
+        });
+        $('.meta-edit-cancel').click(function(){
+            var item_id = $(this).parents('td').data('meta-id');
+            switch_editor(item_id);
+        });
+    });
+</script>
 <div class="container">
     {% if item.is_image() %}
         <div class="image-wrapper">
@@ -57,7 +99,27 @@
                             data-content="Description: {{ meta.field_info.description }}">
                         </i>
                     </td>
-                    <td>{{ meta.content}}</td>
+                    <td class="meta-content" data-meta-id="{{ meta.id }}">
+                        <div id="meta-content-value-{{ meta.id}}">{{ meta.content}}</div>
+                        <div id="inline-editor-{{ meta.id }}" class="hidden">
+                            <textarea cols="40" rows="4">{{ meta.content}}</textarea><br/>
+                            <button class="btn btn-success btn-xs meta-edit-save">Save</button>
+                            <button class="btn btn-danger btn-xs meta-edit-cancel">Cancel</button>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-xs fl-left edit_metadata" data-meta-id="{{ meta.id }}">
+                            <span class="glyphicon glyphicon-edit"></span>
+                            Edit
+                        </button>
+
+                        <form method="POST" action="{{ url_for('delete_meta', meta_id=meta.id)}}">
+                            <button class="btn btn-danger btn-xs">
+                                <span class="glyphicon glyphicon-remove"></span> Delete
+                            </button>
+                        </form>
+
+                    </td>
                 </tr>
             {% endfor %}
         </table>
@@ -77,7 +139,7 @@
             <div class="form-group">
               <label class="col-md-4 control-label" for="metafield">Field type</label>
               <div class="col-md-6">
-                <select id="metafield" name="metafield" class="form-control">
+                <select id="metafield" name="metafield" class="form-control" required="">
                     {% for field in fields %}
                     <option value="{{ field.id }}"> {{ field.name }}</option>
                     {% endfor %}
@@ -98,7 +160,6 @@
               <label class="col-md-4 control-label" for="save-meta"></label>
               <div class="col-md-6">
                 <button id="save-meta" name="save-meta" class="btn btn-success">Save</button>
-                <button id="calcel-meta" name="calcel-meta" class="btn btn-danger">Cancel</button>
               </div>
             </div>
 
@@ -108,5 +169,11 @@
         </div>
       </div>
     </div>
+
+
+
+
+
+
 </div>
 {% endblock %}

@@ -30,3 +30,6 @@ table{
 .info-popover{
     cursor: pointer;
 }
+.fl-left{
+    float:left;
+}
