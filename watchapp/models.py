@@ -22,9 +22,9 @@ class File(db.Model):
     )
 
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String)
-    path = db.Column(db.String, unique=True)
-    mimetype = db.Column(db.String)
+    filename = db.Column(db.String(255), index=True)
+    path = db.Column(db.String(255), unique=True, index=True)
+    mimetype = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=lambda: datetime.now())
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now())
     status = db.Column(EnumDictForInt(STATUS))
